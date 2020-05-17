@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const formAnswers = document.querySelector('#formAnswers');
     const prevButton = document.querySelector('#prev');
     const nextButton = document.querySelector('#next');    
+    const sendButton = document.querySelector('#send');
     
     
     const questions = [{
@@ -89,16 +90,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     const playtest = () => {
         let numberQustion = 0;
+        let finalAnswers = [];
 
-        if (numberQustion <= 1) {
-            prevButton.style.display = 'none';
-        } 
         const renderAnswers = (index) => {
             questions[index].answers.forEach((answer) => {
                 const answerItem = document.createElement('div');
-                answerItem.classList.add('answers-item', 'd-flex', 'flex-column');
+                answerItem.classList.add('answers-item', 'd-flex', 'justify-content-center');
                 answerItem.innerHTML = `
-        <input type="${questions[index].type}" id="${answer.title}" name="answer" class="d-none">
+            <input type="${questions[index].type}" id="${answer.title}" name="answer" class="d-none" value="${answer.title}">
             <label for = "${answer.title}" class = "d-flex flex-column justify-content-between" >
                 <img class="answerImg" src="${answer.url}" alt="burger">
                 <span>${answer.title}</span>
@@ -110,33 +109,108 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const renderQuestion = (indexQuestion) => {
             formAnswers.innerHTML = '';
-            questionTitle.textContent = `${questions[indexQuestion].question}`;
-            renderAnswers(indexQuestion);
+
+            // switch (true) {
+            //     case (numberQustion >= 0 && numberQustion <= questions.length - 1):
+            //          questionTitle.textContent = `${questions[indexQuestion].question}`;
+            //          renderAnswers(indexQuestion);
+            //          nextButton.classList.remove('d-none');
+            //          prevButton.classList.remove('d-none');
+            //          sendButton.classList.add('d-none');
+            //         // break;
+            //     case (numberQustion === 0):
+            //         prevButton.classList.add('d-none');
+            //         break;
+            
+            //     case (numberQustion === questions.length):
+            //         nextButton.classList.add('d-none');
+            //         prevButton.classList.add('d-none');
+            //         sendButton.classList.remove('d-none');
+            //         formAnswers.textContent = "Спасибо";
+
+            //         formAnswers.innerHTML = `
+            //             <div class="form-group">
+            //                 <label for="numberPhone">Enter ypur number</label>
+            //                 <input type="phone" class="form-control" id="numberPhone">
+            //             </div>
+            //         `;
+            //         break;
+            //     case (numberQustion === questions.length + 1):
+            //        formAnswers.textContent = 'Спасибо за пройденный тест';
+            //        setTimeout(() => {
+            //            modalBlock.classList.remove('d-block');
+            //        }, 2000);
+            //         break;
+            
+            //     default:
+            //         break;
+            // }
+
+            if (numberQustion >= 0 && numberQustion <= questions.length - 1) {
+                 questionTitle.textContent = `${questions[indexQuestion].question}`;
+                 renderAnswers(indexQuestion);
+                 nextButton.classList.remove('d-none');
+                 prevButton.classList.remove('d-none');
+                 sendButton.classList.add('d-none');
+            }
+            if (numberQustion === 0) {
+                prevButton.classList.add('d-none'); 
+            }                    
+            if (numberQustion === questions.length) {
+                nextButton.classList.add('d-none');
+                prevButton.classList.add('d-none');
+                sendButton.classList.remove('d-none');
+                formAnswers.textContent = "Спасибо";
+
+                formAnswers.innerHTML = `
+                    <div class="form-group">
+                        <label for="numberPhone">Enter ypur number</label>
+                        <input type="phone" class="form-control" id="numberPhone">
+                    </div>
+                `;
+            }     
+
+            if (numberQustion === questions.length + 1) {
+                formAnswers.textContent = 'Спасибо за пройденный тест';
+                setTimeout(() => {
+                    modalBlock.classList.remove('d-block');
+                }, 2000);
+            }
+            
         }
         renderQuestion(numberQustion);
+
+        const checkAnswer = () => {
+            const obj = {};
+            const inputs = [...formAnswers.elements].filter((input) => input.checked || input.id === 'numberPhone');
+            inputs.forEach((input, index) => {
+                if (numberQustion >= 0 && numberQustion <= questions.length - 1) {
+                    obj[`${index}_${questions[numberQustion].question}`] = input.value;
+                }
+                if (numberQustion === questions.length) {
+                    obj['Номер телефона'] = input.value;
+                }
+            });
+            console.log(obj);
+           finalAnswers.push(obj);
+           console.log(finalAnswers);
+        }
+
         nextButton.onclick = () => {
-            numberQustion++;
-            if (numberQustion >= questions.length - 1) {
-                nextButton.style.visibility = 'hidden';
-                // nextButton.setAttribute('disable', 'true');
-            } 
-            if (numberQustion) {
-                prevButton.style.display = 'block';
-            }
+            checkAnswer();
+            numberQustion++;           
             renderQuestion(numberQustion);
 
         };
-        prevButton.onclick = () => {
-            if (numberQustion <= 1) {
-                prevButton.style.display = 'none';
-            }
-            if (numberQustion <= questions.length - 1) {
-                // nextButton.style.display = 'block';
-                nextButton.style.visibility = 'visible';
-            }           
+        prevButton.onclick = () => {                
             numberQustion--;
             renderQuestion(numberQustion);
         };
+        sendButton.onclick = () => {
+            numberQustion++;
+            checkAnswer();
+            renderQuestion(numberQustion);
+        }
       
     }
 });
