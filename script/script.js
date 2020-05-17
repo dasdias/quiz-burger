@@ -172,6 +172,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (numberQustion === questions.length + 1) {
                 formAnswers.textContent = 'Спасибо за пройденный тест';
+                sendButton.classList.add('d-none');
+
                 setTimeout(() => {
                     modalBlock.classList.remove('d-block');
                 }, 2000);
@@ -182,6 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const checkAnswer = () => {
             const obj = {};
+            console.dir(formAnswers);
             const inputs = [...formAnswers.elements].filter((input) => input.checked || input.id === 'numberPhone');
             inputs.forEach((input, index) => {
                 if (numberQustion >= 0 && numberQustion <= questions.length - 1) {
@@ -191,9 +194,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     obj['Номер телефона'] = input.value;
                 }
             });
-            console.log(obj);
+            // console.log(obj);
            finalAnswers.push(obj);
-           console.log(finalAnswers);
+        //    console.log(finalAnswers);
         }
 
         nextButton.onclick = () => {
